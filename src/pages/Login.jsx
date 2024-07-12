@@ -130,7 +130,7 @@ const Login = () => {
   return (
     <>
       <div className='sm:flex min-h-screen sm:flex-1'>
-        <div className='hidden sm:block mb-8 sm:mb-0'>
+        <div className='mb-8 sm:mb-0'>
           <img
             className='sm:h-screen w-full object-cover'
             src='https://netimg.acc.co.id/redberries/data_content/company_value/company_value_1.webp'
@@ -140,7 +140,7 @@ const Login = () => {
         <div className='mt-6 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
           <div className='mx-auto w-full max-w-sm lg:w-96'>
             <div>
-              <div className='flex gap-4'>
+              <div className='flex gap-4 hidden sm:block '>
                 <img
                   className='h-16 sm:h-20 w-auto'
                   src='https://career.acc.co.id/ACCRedBerries/img/ACCRedBerries.accfooter.svg?jPdDnTGCA6ny2boGziaExw'
