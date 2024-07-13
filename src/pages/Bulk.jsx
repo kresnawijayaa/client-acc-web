@@ -51,7 +51,7 @@ export default function Bulk() {
   };
   
   return (
-    <div className='my-4 sm:my-8 mx-auto px-4 sm:px-8 sm:max-w-7xl'>
+    <div className='my-4 sm:my-8 mx-auto px-4'>
       <form>
         <div className='space-y-12'>
           <div className='grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3'>

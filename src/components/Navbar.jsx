@@ -2,17 +2,18 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import { Disclosure, Menu, Transition, Dialog } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate, NavLink } from "react-router-dom";
-import logo from "../assets/CekSekitarMu.png" 
+import logo from "../assets/CekSekitarMu.png";
 
 const userNavigation = [
-  { name: "Home", href: "/" },
-  { name: "Bulk Add Customer", href: "/bulkAddCustomer" },
+  // { name: "Home", href: "/" },
+  // { name: "Bulk Add Customer", href: "/bulkAddCustomer" },
 ];
 
 const adminNavigation = [
-  { name: "Home", href: "/" },
+  { name: "Manage Customer", href: "/manageCustomer" },
   { name: "Add Customer", href: "/addCustomer" },
   { name: "Bulk Add Customer", href: "/bulkAddCustomer" },
+  
 ];
 
 function classNames(...classes) {
@@ -26,10 +27,15 @@ export default function Navbar() {
 
   const [openx, setOpenx] = useState(false);
   const cancelButtonRef = useRef(null);
-  const [session, setSession] = useState(Date.now())
+  const [session, setSession] = useState(Date.now());
+  const [username, setUsername] = useState("Kamu");
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setUsername(user.name);
+    }
+
     if (user && user.role === "admin") {
       setNavigation(adminNavigation);
     }
@@ -57,7 +63,7 @@ export default function Navbar() {
   return (
     <>
       <header className='flex h-16 border-b border-gray-900/10'>
-        <div className='mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
+        <div className='mx-auto flex w-full items-center justify-between px-4'>
           <div className='flex flex-1 items-center gap-x-6'>
             <button
               type='button'
@@ -70,13 +76,20 @@ export default function Navbar() {
                 aria-hidden='true'
               />
             </button>
-            <img
-              className='h-8 w-auto'
-              src={logo}
-              alt='Your Company'
-            />
+            <NavLink to='/'>
+              {/* <img
+                className='h-8 w-auto'
+                src={logo}
+                alt='Your Company'
+              /> */}
+              <div className='my-auto'>
+                <h1 className='text-xl'>
+                  Cek<span className='font-bold'>SekitarMu</span>
+                </h1>
+              </div>
+            </NavLink>
           </div>
-          <nav className='hidden md:flex md:gap-x-11 md:text-sm md:font-semibold md:leading-6 md:text-gray-700'>
+          {/* <nav className='hidden md:flex md:gap-x-11 md:text-sm md:font-semibold md:leading-6 md:text-gray-700'>
             {navigation.map((item, itemIdx) => (
               <NavLink
                 key={itemIdx}
@@ -91,23 +104,16 @@ export default function Navbar() {
                 {item.name}
               </NavLink>
             ))}
-          </nav>
+          </nav> */}
           <div className='flex flex-1 items-center justify-end gap-x-8'>
-            {/* <button
-              type='button'
-              className='-m-2.5 p-2.5 text-gray-400 hover:text-gray-500'
-            >
-              <span className='sr-only'>View notifications</span>
-              <BellIcon
-                className='h-6 w-6'
-                aria-hidden='true'
-              />
-            </button> */}
             <Menu
               as='div'
               className='relative ml-3'
             >
-              <div>
+              <div className='flex gap-4'>
+                <div className='my-auto hidden sm:block'>
+                  <h1 className='font-medium'>Hello, {username}!</h1>
+                </div>
                 <Menu.Button className='flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'>
                   <span className='sr-only'>Open user menu</span>
                   <img
@@ -153,6 +159,22 @@ export default function Navbar() {
                       </a>
                     )}
                   </Menu.Item> */}
+                  {navigation.map((item, itemIdx) => (
+                    <Menu.Item className='hidden sm:block'>
+                      {({ active }) => (
+                        <NavLink
+                          key={itemIdx}
+                          to={item.href}
+                          className={classNames(
+                            active ? "bg-gray-100" : "",
+                            "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          {item.name}
+                        </NavLink>
+                      )}
+                    </Menu.Item>
+                  ))}
                   <Menu.Item>
                     {({ active }) => (
                       <button
@@ -197,11 +219,16 @@ export default function Navbar() {
                   className='-m-1.5 block p-1.5'
                 >
                   <span className='sr-only'>Your Company</span>
-                  <img
+                  {/* <img
                     className='h-8 w-auto'
                     src={logo}
                     alt=''
-                  />
+                  /> */}
+                  <div className='my-auto'>
+                    <h1 className='text-xl'>
+                      Cek<span className='font-bold'>SekitarMu</span>
+                    </h1>
+                  </div>
                 </a>
               </div>
             </div>
@@ -287,7 +314,7 @@ export default function Navbar() {
                             <a
                               type='button'
                               // onClick={() => {navigate("/login")}}
-                              href="/login"
+                              href='/login'
                               className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
                             >
                               Relogin

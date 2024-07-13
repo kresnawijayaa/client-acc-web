@@ -6,6 +6,8 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Form from '../pages/Form';
 import Bulk from '../pages/Bulk';
+import Manage from '../pages/Manage';
+import Edit from '../pages/Edit';
 import ProtectedRoute from '../middlewares/ProtectedRoute';
 import PublicRoute from '../middlewares/PublicRoute';
 
@@ -36,6 +38,12 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: '/manageCustomer',
+        element: (
+            <ProtectedRoute element={<Manage />} />
+        ),
+      },
+      {
         path: '/addCustomer',
         element: (
             <ProtectedRoute element={<Form />} />
@@ -45,6 +53,12 @@ const router = createBrowserRouter([
         path: '/bulkAddCustomer',
         element: (
             <ProtectedRoute element={<Bulk />} />
+        ),
+      },
+      {
+        path: '/editCustomer/:id',
+        element: (
+            <ProtectedRoute element={<Edit />} />
         ),
       },
     ],

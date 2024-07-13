@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Add() {
+export default function Edit() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [customer, setCustomer] = useState({
     kota: "",
     kecamatan: "",
@@ -20,25 +22,33 @@ export default function Add() {
     tanggalValid: "",
   });
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:3000/api/customers/${id}`, {
+        headers: {
+          authorization: `${token}`,
+        },
+      });
+      setCustomer(response.data);
+    };
+
+    fetchCustomer();
+  }, [id]);
 
   const handleChange = (e) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value.toUpperCase() });
+    setCustomer({ ...customer, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    try {
-      await axios.post("http://localhost:3000/api/customers", customer, {
-        headers: {
-          authorization: `${token}`,
-        },
-      });
-      navigate('/manageCustomer');
-    } catch (error) {
-      console.error("There was an error adding the customer!", error);
-    }
+    await axios.put(`http://localhost:3000/api/customers/${id}`, customer, {
+      headers: {
+        authorization: `${token}`,
+      },
+    });
+    navigate('/manageCustomer');
   };
 
   return (
@@ -48,10 +58,10 @@ export default function Add() {
           <div className='grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3'>
             <div>
               <h1 className='text-base font-semibold leading-7 text-gray-900'>
-                Add Customer
+                Edit Customer
               </h1>
               <p className='mt-1 text-sm leading-6 text-gray-600'>
-                Tambah data customer.
+                Edit data customer.
               </p>
             </div>
 
