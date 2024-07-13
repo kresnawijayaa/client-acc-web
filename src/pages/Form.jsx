@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Add() {
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   const [customer, setCustomer] = useState({
     kota: "",
     kecamatan: "",
@@ -30,7 +32,7 @@ export default function Add() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      await axios.post("http://localhost:3000/api/customers", customer, {
+      await axios.post(`${baseURL}/api/customers`, customer, {
         headers: {
           authorization: `${token}`,
         },

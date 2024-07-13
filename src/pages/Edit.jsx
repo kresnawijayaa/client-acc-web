@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Edit() {
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState({
@@ -25,7 +27,7 @@ export default function Edit() {
   useEffect(() => {
     const fetchCustomer = async () => {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:3000/api/customers/${id}`, {
+      const response = await axios.get(`${baseURL}/api/customers/${id}`, {
         headers: {
           authorization: `${token}`,
         },
@@ -43,7 +45,7 @@ export default function Edit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    await axios.put(`http://localhost:3000/api/customers/${id}`, customer, {
+    await axios.put(`${baseURL}/api/customers/${id}`, customer, {
       headers: {
         authorization: `${token}`,
       },
