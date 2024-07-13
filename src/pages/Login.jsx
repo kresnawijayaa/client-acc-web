@@ -140,13 +140,13 @@ const Login = () => {
         <div className='mt-6 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
           <div className='mx-auto w-full max-w-sm lg:w-96'>
             <div>
-              <div className='flex gap-4 hidden sm:block '>
+              {/* <div className='flex gap-4 hidden sm:block '>
                 <img
                   className='h-16 sm:h-20 w-auto'
                   src='https://career.acc.co.id/ACCRedBerries/img/ACCRedBerries.accfooter.svg?jPdDnTGCA6ny2boGziaExw'
                   alt='Your Company'
                 />
-              </div>
+              </div> */}
               <h2 className='mt-2 text-2xl font-bold leading-9 tracking-tight text-neutral-800'>
                 Log in to your account
               </h2>

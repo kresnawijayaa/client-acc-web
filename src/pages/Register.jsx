@@ -11,20 +11,34 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminCode, setAdminCode] = useState("");
   const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const viteAdminCode = import.meta.env.VITE_ADMIN_CODE
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch(`${baseURL}/api/auth/register`, {
+      let apiUrl = `${baseURL}/api/auth/register`;
+      const body = { name, email, password, phone };
+
+      if (isAdmin) {
+        if (adminCode !== viteAdminCode) {
+          setError("Invalid admin code");
+          return;
+        }
+        apiUrl = `${baseURL}/api/auth/register/admin`;
+      }
+
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password, phone }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
@@ -41,9 +55,9 @@ const Register = () => {
   return (
     <>
       <div className='sm:flex min-h-screen sm:flex-1'>
-        <div className='hidden sm:block mb-8 sm:mb-0'>
+        <div className='mb-8 sm:mb-0'>
           <img
-            className='sm:h-screen w-full object-cover'
+            className='sm:h-full w-full object-cover'
             src='https://netimg.acc.co.id/redberries/data_content/company_value/company_value_1.webp'
             alt=''
           />
@@ -51,13 +65,6 @@ const Register = () => {
         <div className='mt-6 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
           <div className='mx-auto w-full max-w-sm lg:w-96'>
             <div>
-              <div className='flex gap-4'>
-                <img
-                  className='h-16 sm:h-20 w-auto'
-                  src='https://career.acc.co.id/ACCRedBerries/img/ACCRedBerries.accfooter.svg?jPdDnTGCA6ny2boGziaExw'
-                  alt='Your Company'
-                />
-              </div>
               <h2 className='mt-2 text-2xl font-bold leading-9 tracking-tight text-neutral-800'>
                 Create your account
               </h2>
@@ -191,10 +198,49 @@ const Register = () => {
                     </div>
                   </div>
 
+                  <div className='flex items-center'>
+                    <input
+                      id='isAdmin'
+                      name='isAdmin'
+                      type='checkbox'
+                      checked={isAdmin}
+                      onChange={(e) => setIsAdmin(e.target.checked)}
+                      className='h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500'
+                    />
+                    <label
+                      htmlFor='isAdmin'
+                      className='ml-2 block text-sm text-gray-900'
+                    >
+                      Register sebagai admin
+                    </label>
+                  </div>
+
+                  {isAdmin && (
+                    <div>
+                      <label
+                        htmlFor='adminCode'
+                        className='block text-sm font-medium leading-6 text-gray-900'
+                      >
+                        Admin Code
+                      </label>
+                      <div className='mt-2'>
+                        <input
+                          id='adminCode'
+                          name='adminCode'
+                          type='text'
+                          required
+                          value={adminCode}
+                          onChange={(e) => setAdminCode(e.target.value)}
+                          className='block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {error && (
                     <div className='mb-4 text-sm text-red-600'>{error}</div>
                   )}
-                  
+
                   <div>
                     <button
                       type='submit'
