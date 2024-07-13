@@ -36,7 +36,7 @@ export default function Navbar() {
 
     const handleSessionTimeout = () => {
       const timeSinceSessionStart = Date.now() - session;
-      if (timeSinceSessionStart > 60 * 1000) {
+      if (timeSinceSessionStart > 24 * 60 * 60 * 1000) {
         setOpenx(true);
       }
     };
