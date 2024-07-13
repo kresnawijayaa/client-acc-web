@@ -1,4 +1,4 @@
-//routes.jsx
+// routes.jsx
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from '../pages/Layout';
 import Home from '../pages/Home';
@@ -6,6 +6,8 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Form from '../pages/Form';
 import Bulk from '../pages/Bulk';
+import ProtectedRoute from '../middlewares/ProtectedRoute';
+import PublicRoute from '../middlewares/PublicRoute';
 
 const router = createBrowserRouter([
   {
@@ -15,13 +17,13 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: (
-        <Login />
+        <PublicRoute element={<Login />} />
     ),
   },
   {
     path: '/register',
     element: (
-        <Register />
+        <PublicRoute element={<Register />} />
     ),
   },
   {
@@ -30,19 +32,19 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: (
-            <Home />
+            <ProtectedRoute element={<Home />} />
         ),
       },
       {
         path: '/addCustomer',
         element: (
-            <Form />
+            <ProtectedRoute element={<Form />} />
         ),
       },
       {
         path: '/bulkAddCustomer',
         element: (
-            <Bulk />
+            <ProtectedRoute element={<Bulk />} />
         ),
       },
     ],

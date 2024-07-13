@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Disclosure, Menu, Transition, Dialog } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate, NavLink } from "react-router-dom";
@@ -24,16 +24,34 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navigation, setNavigation] = useState(userNavigation);
 
+  const [openx, setOpenx] = useState(false);
+  const cancelButtonRef = useRef(null);
+  const [session, setSession] = useState(Date.now())
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.role === "admin") {
       setNavigation(adminNavigation);
     }
-  }, []);
+
+    const handleSessionTimeout = () => {
+      const timeSinceSessionStart = Date.now() - session;
+      if (timeSinceSessionStart > 60 * 1000) {
+        setOpenx(true);
+      }
+    };
+
+    handleSessionTimeout();
+
+    const intervalId = setInterval(handleSessionTimeout, 60 * 1000);
+
+    return () => clearInterval(intervalId);
+  }, [session]);
 
   const handleSignOut = () => {
     localStorage.clear(); // Clear all local storage
-    navigate("/login"); // Navigate to login page
+    window.location.reload();
+    // navigate("/login"); // Navigate to login page
   };
 
   return (
@@ -207,6 +225,84 @@ export default function Navbar() {
           </Dialog.Panel>
         </Dialog>
       </header>
+      <Transition.Root
+        show={openx}
+        as={Fragment}
+      >
+        <Dialog
+          as='div'
+          className='relative z-10'
+          initialFocus={cancelButtonRef}
+          onClose={setOpenx}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity' />
+          </Transition.Child>
+
+          <div className='fixed inset-0 z-10 overflow-y-auto'>
+            <div className='flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0'>
+              <Transition.Child
+                as={Fragment}
+                enter='ease-out duration-300'
+                enterFrom='opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'
+                enterTo='opacity-100 translate-y-0 sm:scale-100'
+                leave='ease-in duration-200'
+                leaveFrom='opacity-100 translate-y-0 sm:scale-100'
+                leaveTo='opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'
+              >
+                <Dialog.Panel className='relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6'>
+                  <div className='absolute right-0 top-0 hidden pr-4 pt-4 sm:block'>
+                    <button
+                      type='button'
+                      className='rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                      onClick={() => setOpenx(false)}
+                    >
+                      <span className='sr-only'>Close</span>
+                      <XMarkIcon
+                        className='h-6 w-6'
+                        aria-hidden='true'
+                      />
+                    </button>
+                  </div>
+
+                  <div>
+                    <div className='flex flex-col items-center justify-center text-center space-y-2'>
+                      <h2 className='mt-2 text-2xl font-semibold leading-9 tracking-tight text-neutral-800'>
+                        Your session timed out
+                      </h2>
+                    </div>
+
+                    <div className='my-8'>
+                      <div className='flex flex-col space-y-8'>
+                        <div className='flex flex-col space-y-5'>
+                          <div className='w-full flex justify-center items-center gap-8'>
+                            <a
+                              type='button'
+                              // onClick={() => {navigate("/login")}}
+                              href="/login"
+                              className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
+                            >
+                              Relogin
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </>
   );
 }
