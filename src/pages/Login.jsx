@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { useNavigate } from "react-router-dom"; 
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -7,9 +7,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State for error message
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false); // State for loading
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
   const [open, setOpen] = useState(false);
   const [openx, setOpenx] = useState(false);
@@ -23,7 +23,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous error message
+    setError(""); 
     setIsLoading(true); // Set loading state to true
     try {
       const response = await fetch(`${baseURL}/api/auth/login`, {
@@ -36,27 +36,27 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const verifiedDate = new Date(data.user.verified_date._seconds * 1000); // Konversi _seconds ke milidetik
+        const verifiedDate = new Date(data.user.verified_date._seconds * 1000); 
         const currentDate = new Date();
-        const diffTime = Math.abs(currentDate - verifiedDate); // Selisih waktu dalam milidetik
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Konversi milidetik ke hari
+        const diffTime = Math.abs(currentDate - verifiedDate); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         const verified_date_valid = diffDays < 7;
 
         if (data.user.is_verified && verified_date_valid) {
           localStorage.setItem("token", data.token);
           localStorage.setItem("refreshToken", data.refreshToken);
           localStorage.setItem("user", JSON.stringify(data.user));
-          navigate("/"); // Navigate to home page
+          navigate("/"); 
         } else {
-          setContact(data.user.email); // Set contact to user's email
-          setOpenx(true); // Open modal to choose verification method
+          setContact(data.user.email); 
+          setOpenx(true); 
         }
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Login failed"); // Set error message
+        setError(errorData.message || "Login failed"); 
       }
     } catch (error) {
-      setError("Something went wrong. Please try again later."); // Set error message for network errors
+      setError("Something went wrong. Please try again later."); 
     } finally {
       setIsLoading(false); // Set loading state to false
     }
@@ -71,9 +71,9 @@ const Login = () => {
         },
         body: JSON.stringify({ contact }),
       });
-      setOpenx(false); // Close method selection modal
-      setOpen(true); // Open OTP verification modal
-      setOtpCountdown(60); // Reset OTP countdown
+      setOpenx(false); 
+      setOpen(true); 
+      setOtpCountdown(60); 
     } catch (error) {
       console.error("Failed to send OTP", error);
     }
@@ -86,9 +86,7 @@ const Login = () => {
         setOtpCountdown((prev) => prev - 1);
       }, 1000);
     } else if (otpCountdown === 0 && otpResendCount >= 3) {
-      setError(
-        "Maximum OTP resend attempts reached. Redirecting to login page."
-      );
+      setError("Maximum OTP resend attempts reached. Redirecting to login page.");
       setTimeout(() => {
         navigate("/login");
         window.location.reload();
@@ -127,7 +125,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/"); // Navigate to home page
+        navigate("/"); 
       } else {
         setError("Invalid OTP. Please try again.");
       }
@@ -158,10 +156,7 @@ const Login = () => {
               <div>
                 <form className='space-y-6' onSubmit={handleLogin}>
                   <div>
-                    <label
-                      htmlFor='emailOrPhone'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='emailOrPhone' className='block text-sm font-medium leading-6 text-gray-900'>
                       Email / phone number
                     </label>
                     <div className='mt-2'>
@@ -178,10 +173,7 @@ const Login = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor='password'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
                       Password
                     </label>
                     <div className='mt-2 relative'>
@@ -247,9 +239,9 @@ const Login = () => {
                     <button
                       type='submit'
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                      disabled={isLoading} // Disable button when loading
+                      disabled={isLoading} 
                     >
-                      {isLoading ? 'Loging in...' : 'Log in'}
+                      {isLoading ? 'Logging in...' : 'Log in'}
                     </button>
                     <p className='mt-4 text-sm leading-6 text-gray-500'>
                       Don't have account?{" "}

@@ -11,6 +11,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // State for loading
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminCode, setAdminCode] = useState("");
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true); // Set loading state to true
 
     try {
       let apiUrl = `${baseURL}/api/auth/register`;
@@ -28,6 +30,7 @@ const Register = () => {
       if (isAdmin) {
         if (adminCode !== viteAdminCode) {
           setError("Invalid admin code");
+          setIsLoading(false); // Set loading state to false
           return;
         }
         apiUrl = `${baseURL}/api/auth/register/admin`;
@@ -49,6 +52,8 @@ const Register = () => {
       }
     } catch (error) {
       setError("Something went wrong. Please try again later.");
+    } finally {
+      setIsLoading(false); // Set loading state to false
     }
   };
 
@@ -72,15 +77,9 @@ const Register = () => {
 
             <div className='mt-6'>
               <div>
-                <form
-                  className='space-y-6'
-                  onSubmit={handleRegister}
-                >
+                <form className='space-y-6' onSubmit={handleRegister}>
                   <div>
-                    <label
-                      htmlFor='name'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='name' className='block text-sm font-medium leading-6 text-gray-900'>
                       Name
                     </label>
                     <div className='mt-2'>
@@ -97,10 +96,7 @@ const Register = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor='email'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
                       Email
                     </label>
                     <div className='mt-2'>
@@ -117,10 +113,7 @@ const Register = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor='password'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
                       Password
                     </label>
                     <div className='mt-2 relative'>
@@ -179,10 +172,7 @@ const Register = () => {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor='phone'
-                      className='block text-sm font-medium leading-6 text-gray-900'
-                    >
+                    <label htmlFor='phone' className='block text-sm font-medium leading-6 text-gray-900'>
                       Phone Number
                     </label>
                     <div className='mt-2'>
@@ -207,20 +197,14 @@ const Register = () => {
                       onChange={(e) => setIsAdmin(e.target.checked)}
                       className='h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500'
                     />
-                    <label
-                      htmlFor='isAdmin'
-                      className='ml-2 block text-sm text-gray-900'
-                    >
+                    <label htmlFor='isAdmin' className='ml-2 block text-sm text-gray-900'>
                       Register sebagai admin
                     </label>
                   </div>
 
                   {isAdmin && (
                     <div>
-                      <label
-                        htmlFor='adminCode'
-                        className='block text-sm font-medium leading-6 text-gray-900'
-                      >
+                      <label htmlFor='adminCode' className='block text-sm font-medium leading-6 text-gray-900'>
                         Admin Code
                       </label>
                       <div className='mt-2'>
@@ -245,8 +229,9 @@ const Register = () => {
                     <button
                       type='submit'
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                      disabled={isLoading} 
                     >
-                      Register
+                      {isLoading ? 'Registering...' : 'Register'}
                     </button>
                     <p className='mt-4 text-sm leading-6 text-gray-500'>
                       Have an account?{" "}
@@ -264,15 +249,8 @@ const Register = () => {
           </div>
         </div>
       </div>
-      <Transition.Root
-        show={open}
-        as={Fragment}
-      >
-        <Dialog
-          as='div'
-          className='relative z-10'
-          onClose={setOpen}
-        >
+      <Transition.Root show={open} as={Fragment}>
+        <Dialog as='div' className='relative z-10' onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -299,16 +277,10 @@ const Register = () => {
                 <Dialog.Panel className='relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6'>
                   <div>
                     <div className='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100'>
-                      <CheckIcon
-                        className='h-6 w-6 text-green-600'
-                        aria-hidden='true'
-                      />
+                      <CheckIcon className='h-6 w-6 text-green-600' aria-hidden='true' />
                     </div>
                     <div className='mt-3 text-center sm:mt-5'>
-                      <Dialog.Title
-                        as='h3'
-                        className='text-base font-semibold leading-6 text-gray-900'
-                      >
+                      <Dialog.Title as='h3' className='text-base font-semibold leading-6 text-gray-900'>
                         Registration successful
                       </Dialog.Title>
                       <div className='mt-2'>
