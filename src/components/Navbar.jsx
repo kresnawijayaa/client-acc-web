@@ -10,10 +10,10 @@ const userNavigation = [
 ];
 
 const adminNavigation = [
+  { name: "Manage User", href: "/users" },
   { name: "Manage Customer", href: "/manageCustomer" },
   { name: "Add Customer", href: "/addCustomer" },
   { name: "Bulk Add Customer", href: "/bulkAddCustomer" },
-  
 ];
 
 function classNames(...classes) {

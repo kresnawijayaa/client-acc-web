@@ -140,7 +140,7 @@ export default function Manage() {
               type='text'
               value={searchTerm}
               onChange={handleSearch}
-              className='relative mt-2 w-full rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'
+              className='block mt-2 w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
               placeholder='Search by name, city, district, or address'
             />
           </div>

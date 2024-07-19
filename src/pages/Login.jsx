@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-  CheckIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +34,13 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.user.is_verified) {
+        const verifiedDate = new Date(data.user.verified_date._seconds * 1000); // Konversi _seconds ke milidetik
+        const currentDate = new Date();
+        const diffTime = Math.abs(currentDate - verifiedDate); // Selisih waktu dalam milidetik
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Konversi milidetik ke hari
+        const verified_date_valid = diffDays < 7;
+
+        if (data.user.is_verified && verified_date_valid) {
           localStorage.setItem("token", data.token);
           localStorage.setItem("refreshToken", data.refreshToken);
           localStorage.setItem("user", JSON.stringify(data.user));
@@ -79,7 +82,9 @@ const Login = () => {
         setOtpCountdown((prev) => prev - 1);
       }, 1000);
     } else if (otpCountdown === 0 && otpResendCount >= 3) {
-      setError("Maximum OTP resend attempts reached. Redirecting to login page.");
+      setError(
+        "Maximum OTP resend attempts reached. Redirecting to login page."
+      );
       setTimeout(() => {
         navigate("/login");
         window.location.reload();
@@ -240,7 +245,7 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {error && (
+                  {error && error != "Invalid OTP. Please try again." && (
                     <div className='mb-4 text-sm text-red-600'>{error}</div>
                   )}
 
@@ -293,7 +298,7 @@ const Login = () => {
           </Transition.Child>
 
           <div className='fixed inset-0 z-10 overflow-y-auto'>
-            <div className='flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0'>
+            <div className='flex min-h-full justify-center p-4 text-center items-center sm:p-0'>
               <Transition.Child
                 as={Fragment}
                 enter='ease-out duration-300'
@@ -323,6 +328,12 @@ const Login = () => {
                       <h2 className='mt-2 text-2xl font-semibold leading-9 tracking-tight text-neutral-800'>
                         Choose verification method
                       </h2>
+                      <div className='flex flex-row text-sm text-gray-400'>
+                        <p>
+                          For security reasons, you must verify your account
+                          periodically (7 days)
+                        </p>
+                      </div>
                     </div>
 
                     <div className='my-8'>
@@ -409,7 +420,8 @@ const Login = () => {
                       </h2>
                       <div className='flex flex-row text-sm text-gray-400'>
                         <p>
-                          We have sent a code to your {contact.includes('@') ? 'email' : 'phone'} {contact}
+                          We have sent a code to your{" "}
+                          {contact.includes("@") ? "email" : "phone"} {contact}
                         </p>
                       </div>
                     </div>
@@ -422,13 +434,18 @@ const Login = () => {
                         <div className='flex flex-col space-y-8'>
                           <div className='flex gap-4 flex-row items-center justify-between mx-auto w-full max-w-md'>
                             {otp.map((value, index) => (
-                              <div className='w-16 h-16' key={index}>
+                              <div
+                                className='w-16 h-16'
+                                key={index}
+                              >
                                 <input
                                   id={`otp-${index}`}
                                   className='w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
                                   type='text'
                                   value={value}
-                                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                                  onChange={(e) =>
+                                    handleOtpChange(index, e.target.value)
+                                  }
                                   maxLength={1}
                                 />
                               </div>
@@ -436,6 +453,12 @@ const Login = () => {
                           </div>
 
                           <div className='flex flex-col space-y-5'>
+                            {error && (
+                                <div className='mx-auto text-sm text-red-600'>
+                                  {error}
+                                </div>
+                              )}
+
                             <div className='w-full flex justify-center items-center'>
                               <button
                                 type='button'
@@ -454,7 +477,11 @@ const Login = () => {
                                 <button
                                   className='flex flex-row items-center font-semibold text-blue-600'
                                   onClick={() => {
-                                    sendOtp(contact.includes('@') ? 'email' : 'whatsapp');
+                                    sendOtp(
+                                      contact.includes("@")
+                                        ? "email"
+                                        : "whatsapp"
+                                    );
                                     setOtpResendCount((prev) => prev + 1);
                                     setOtpCountdown(60);
                                   }}
@@ -462,7 +489,9 @@ const Login = () => {
                                   Resend
                                 </button>
                               ) : (
-                                <span className='text-red-600'>Maximum resend attempts reached</span>
+                                <span className='text-red-600'>
+                                  Maximum resend attempts reached
+                                </span>
                               )}
                             </div>
                           </div>

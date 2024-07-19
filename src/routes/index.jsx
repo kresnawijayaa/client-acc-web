@@ -8,6 +8,7 @@ import Form from '../pages/Form';
 import Bulk from '../pages/Bulk';
 import Manage from '../pages/Manage';
 import Edit from '../pages/Edit';
+import Users from '../pages/Users';
 import ProtectedRoute from '../middlewares/ProtectedRoute';
 import PublicRoute from '../middlewares/PublicRoute';
 
@@ -59,6 +60,12 @@ const router = createBrowserRouter([
         path: '/editCustomer/:id',
         element: (
             <ProtectedRoute element={<Edit />} />
+        ),
+      },
+      {
+        path: '/users',
+        element: (
+            <ProtectedRoute element={<Users />} />
         ),
       },
     ],
