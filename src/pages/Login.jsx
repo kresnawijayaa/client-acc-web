@@ -8,6 +8,7 @@ const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // State for error message
+  const [isLoading, setIsLoading] = useState(false); // State for loading
   const navigate = useNavigate(); // Initialize useNavigate
 
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous error message
+    setIsLoading(true); // Set loading state to true
     try {
       const response = await fetch(`${baseURL}/api/auth/login`, {
         method: "POST",
@@ -55,6 +57,8 @@ const Login = () => {
       }
     } catch (error) {
       setError("Something went wrong. Please try again later."); // Set error message for network errors
+    } finally {
+      setIsLoading(false); // Set loading state to false
     }
   };
 
@@ -145,13 +149,6 @@ const Login = () => {
         <div className='mt-6 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
           <div className='mx-auto w-full max-w-sm lg:w-96'>
             <div>
-              {/* <div className='flex gap-4 hidden sm:block '>
-                <img
-                  className='h-16 sm:h-20 w-auto'
-                  src='https://career.acc.co.id/ACCRedBerries/img/ACCRedBerries.accfooter.svg?jPdDnTGCA6ny2boGziaExw'
-                  alt='Your Company'
-                />
-              </div> */}
               <h2 className='mt-2 text-2xl font-bold leading-9 tracking-tight text-neutral-800'>
                 Log in to your account
               </h2>
@@ -159,10 +156,7 @@ const Login = () => {
 
             <div className='mt-6'>
               <div>
-                <form
-                  className='space-y-6'
-                  onSubmit={handleLogin}
-                >
+                <form className='space-y-6' onSubmit={handleLogin}>
                   <div>
                     <label
                       htmlFor='emailOrPhone'
@@ -245,7 +239,7 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {error && error != "Invalid OTP. Please try again." && (
+                  {error && error !== "Invalid OTP. Please try again." && (
                     <div className='mb-4 text-sm text-red-600'>{error}</div>
                   )}
 
@@ -253,8 +247,9 @@ const Login = () => {
                     <button
                       type='submit'
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                      disabled={isLoading} // Disable button when loading
                     >
-                      Log in
+                      {isLoading ? 'Loging in...' : 'Log in'}
                     </button>
                     <p className='mt-4 text-sm leading-6 text-gray-500'>
                       Don't have account?{" "}
@@ -275,16 +270,8 @@ const Login = () => {
         </div>
       </div>
 
-      <Transition.Root
-        show={openx}
-        as={Fragment}
-      >
-        <Dialog
-          as='div'
-          className='relative z-10'
-          initialFocus={cancelButtonRef}
-          onClose={setOpenx}
-        >
+      <Transition.Root show={openx} as={Fragment}>
+        <Dialog as='div' className='relative z-10' initialFocus={cancelButtonRef} onClose={setOpenx}>
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -316,10 +303,7 @@ const Login = () => {
                       onClick={() => setOpenx(false)}
                     >
                       <span className='sr-only'>Close</span>
-                      <XMarkIcon
-                        className='h-6 w-6'
-                        aria-hidden='true'
-                      />
+                      <XMarkIcon className='h-6 w-6' aria-hidden='true' />
                     </button>
                   </div>
 
@@ -366,16 +350,8 @@ const Login = () => {
         </Dialog>
       </Transition.Root>
 
-      <Transition.Root
-        show={open}
-        as={Fragment}
-      >
-        <Dialog
-          as='div'
-          className='relative z-10'
-          initialFocus={cancelButtonRef}
-          onClose={setOpen}
-        >
+      <Transition.Root show={open} as={Fragment}>
+        <Dialog as='div' className='relative z-10' initialFocus={cancelButtonRef} onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -407,10 +383,7 @@ const Login = () => {
                       onClick={() => setOpen(false)}
                     >
                       <span className='sr-only'>Close</span>
-                      <XMarkIcon
-                        className='h-6 w-6'
-                        aria-hidden='true'
-                      />
+                      <XMarkIcon className='h-6 w-6' aria-hidden='true' />
                     </button>
                   </div>
                   <div>
@@ -427,25 +400,17 @@ const Login = () => {
                     </div>
 
                     <div className='mt-8'>
-                      <form
-                        action=''
-                        method='post'
-                      >
+                      <form action='' method='post'>
                         <div className='flex flex-col space-y-8'>
                           <div className='flex gap-2 sm:gap-4 flex-row items-center justify-between mx-auto w-full max-w-md'>
                             {otp.map((value, index) => (
-                              <div
-                                className='w-16 sm:h-16'
-                                key={index}
-                              >
+                              <div className='w-16 sm:h-16' key={index}>
                                 <input
                                   id={`otp-${index}`}
                                   className='w-full sm:h-full flex flex-col items-center justify-center text-center sm:px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
-                                  type='text'
+                                  type='number'
                                   value={value}
-                                  onChange={(e) =>
-                                    handleOtpChange(index, e.target.value)
-                                  }
+                                  onChange={(e) => handleOtpChange(index, e.target.value)}
                                   maxLength={1}
                                 />
                               </div>
@@ -454,10 +419,10 @@ const Login = () => {
 
                           <div className='flex flex-col space-y-5'>
                             {error && (
-                                <div className='mx-auto text-sm text-red-600'>
-                                  {error}
-                                </div>
-                              )}
+                              <div className='mx-auto text-sm text-red-600'>
+                                {error}
+                              </div>
+                            )}
 
                             <div className='w-full flex justify-center items-center'>
                               <button
@@ -477,11 +442,7 @@ const Login = () => {
                                 <button
                                   className='flex flex-row items-center font-semibold text-blue-600'
                                   onClick={() => {
-                                    sendOtp(
-                                      contact.includes("@")
-                                        ? "email"
-                                        : "whatsapp"
-                                    );
+                                    sendOtp(contact.includes("@") ? "email" : "whatsapp");
                                     setOtpResendCount((prev) => prev + 1);
                                     setOtpCountdown(60);
                                   }}
