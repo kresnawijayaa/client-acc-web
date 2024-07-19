@@ -432,15 +432,15 @@ const Login = () => {
                         method='post'
                       >
                         <div className='flex flex-col space-y-8'>
-                          <div className='flex gap-4 flex-row items-center justify-between mx-auto w-full max-w-md'>
+                          <div className='flex gap-2 sm:gap-4 flex-row items-center justify-between mx-auto w-full max-w-md'>
                             {otp.map((value, index) => (
                               <div
-                                className='w-16 h-16'
+                                className='w-16 sm:h-16'
                                 key={index}
                               >
                                 <input
                                   id={`otp-${index}`}
-                                  className='w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
+                                  className='w-full sm:h-full flex flex-col items-center justify-center text-center sm:px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
                                   type='text'
                                   value={value}
                                   onChange={(e) =>
