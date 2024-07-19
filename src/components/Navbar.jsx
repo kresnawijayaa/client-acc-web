@@ -10,6 +10,7 @@ const userNavigation = [
 ];
 
 const adminNavigation = [
+  { name: "Dashboard", href: "/" },
   { name: "Manage User", href: "/users" },
   { name: "Manage Customer", href: "/manageCustomer" },
   { name: "Add Customer", href: "/addCustomer" },
