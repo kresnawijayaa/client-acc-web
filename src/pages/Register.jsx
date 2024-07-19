@@ -62,7 +62,7 @@ const Register = () => {
             alt=''
           />
         </div>
-        <div className='mt-6 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
+        <div className='my-8 sm:mt-0 flex flex-1 flex-col justify-center px-4 py-auto sm:px-6 lg:flex-none lg:px-20 xl:px-24'>
           <div className='mx-auto w-full max-w-sm lg:w-96'>
             <div>
               <h2 className='mt-2 text-2xl font-bold leading-9 tracking-tight text-neutral-800'>
