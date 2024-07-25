@@ -11,12 +11,14 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false); // State for loading
   const navigate = useNavigate(); 
 
+  const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
   const [openx, setOpenx] = useState(false);
   const [contact, setContact] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [otpCountdown, setOtpCountdown] = useState(60);
   const [otpResendCount, setOtpResendCount] = useState(0);
+  const [verificationMethod, setVerificationMethod] = useState(""); // State for verification method
 
   const cancelButtonRef = useRef(null);
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -36,6 +38,7 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
+        setUser(data)
         const verifiedDate = new Date(data.user.verified_date._seconds * 1000); 
         const currentDate = new Date();
         const diffTime = Math.abs(currentDate - verifiedDate); 
@@ -62,18 +65,22 @@ const Login = () => {
     }
   };
 
-  const sendOtp = async () => {
+  const sendOtp = async (method) => {
     try {
+      const contactDetail = method === "email" ? contact : user.user.phone;
+      method === "email" ? setContact(contact) : setContact(user.user.phone);
+
       await fetch(`${baseURL}/api/auth/otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ contact }),
+        body: JSON.stringify({ contact: contactDetail }),
       });
       setOpenx(false); 
       setOpen(true); 
       setOtpCountdown(60); 
+      setVerificationMethod(method);
     } catch (error) {
       console.error("Failed to send OTP", error);
     }
@@ -319,16 +326,16 @@ const Login = () => {
                             <button
                               type='button'
                               className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
-                              onClick={() => sendOtp()}
+                              onClick={() => sendOtp("email")}
                             >
                               Via Email
                             </button>
                             <button
                               type='button'
                               className='mt-3 inline-flex w-full justify-center rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto'
-                              onClick={() => sendOtp()}
+                              onClick={() => sendOtp("whatsapp")}
                             >
-                              Via WhatsApp
+                              Via WhatsApp/SMS
                             </button>
                           </div>
                         </div>
@@ -386,7 +393,7 @@ const Login = () => {
                       <div className='flex flex-row text-sm text-gray-400'>
                         <p>
                           We have sent a code to your{" "}
-                          {contact.includes("@") ? "email" : "phone"} {contact}
+                          {verificationMethod === "email" ? "email" : "phone"} {verificationMethod === "email" ? contact : user?.user?.phone}
                         </p>
                       </div>
                     </div>
@@ -399,7 +406,7 @@ const Login = () => {
                               <div className='w-16 sm:h-16' key={index}>
                                 <input
                                   id={`otp-${index}`}
-                                  className='w-full sm:h-full flex flex-col items-center justify-center text-center sm:px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
+                                  className='[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full sm:h-full flex flex-col items-center justify-center text-center outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
                                   type='number'
                                   value={value}
                                   onChange={(e) => handleOtpChange(index, e.target.value)}
@@ -434,7 +441,7 @@ const Login = () => {
                                 <button
                                   className='flex flex-row items-center font-semibold text-blue-600'
                                   onClick={() => {
-                                    sendOtp(contact.includes("@") ? "email" : "whatsapp");
+                                    sendOtp(verificationMethod);
                                     setOtpResendCount((prev) => prev + 1);
                                     setOtpCountdown(60);
                                   }}
