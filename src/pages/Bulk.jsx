@@ -1,55 +1,65 @@
 import React, { useState } from "react";
 import CSVReader from "react-csv-reader";
 import axios from "axios";
+import loadingIcon from "../assets/loading-icon.svg";
 
 export default function Bulk() {
   const [data, setData] = useState([]);
+  const [loadingStatus, setLoadingStatus] = useState(false);
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   const handleFileUpload = (data) => {
-    const formattedData = data.slice(1).map((row) => ({
-      kota: row[0],
-      kecamatan: row[1],
-      alamat: row[2],
-      agreement: row[3],
-      namaCustomer: row[4],
-      merk: row[5],
-      type: row[6],
-      warna: row[7],
-      tahunMobil: row[8],
-      tenor: row[9] ? parseInt(row[9], 10) : null,
-      handphone: row[10],
-      namaSales: row[11],
-      maxOvd: row[12],
-      tanggalValid: row[13],
-    })).filter(row => 
-      Object.values(row).some(value => value !== undefined && value !== null && value !== "")
-    ); // Filter baris kosong
-  
+    const formattedData = data
+      .slice(1)
+      .map((row) => ({
+        kota: row[0],
+        kecamatan: row[1],
+        alamat: row[2],
+        agreement: row[3],
+        namaCustomer: row[4],
+        merk: row[5],
+        type: row[6],
+        warna: row[7],
+        tahunMobil: row[8],
+        tenor: row[9] ? parseInt(row[9], 10) : null,
+        handphone: row[10],
+        namaSales: row[11],
+        maxOvd: row[12],
+        tanggalValid: row[13],
+      }))
+      .filter((row) =>
+        Object.values(row).some(
+          (value) => value !== undefined && value !== null && value !== ""
+        )
+      ); // Filter baris kosong
+
     setData(formattedData);
     console.log(formattedData);
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token'); // Ambil token dari localStorage
-  
-    console.log(data, "<<<>>>")
+    const token = localStorage.getItem("token"); // Ambil token dari localStorage
+
+    console.log(data, "<<<>>>");
     try {
-      await axios.post(`${baseURL}/api/customers/bulk`, 
+      setLoadingStatus(true)
+      await axios.post(
+        `${baseURL}/api/customers/bulk`,
         { customers: data }, // Mengirim array data customer dalam body request
         {
           headers: {
-            authorization: `${token}` // Set header Authorization dengan token
-          }
+            authorization: `${token}`, // Set header Authorization dengan token
+          },
         }
       );
       alert("Data berhasil disimpan!");
+      setLoadingStatus(false)
     } catch (error) {
       console.error("Error saving data:", error);
       alert("Terjadi kesalahan saat menyimpan data.");
     }
   };
-  
+
   return (
     <div className='my-4 sm:my-8 mx-auto px-4'>
       <form>
@@ -70,7 +80,7 @@ export default function Bulk() {
                     cssClass='csv-reader-input'
                     onFileLoaded={handleFileUpload}
                     inputId='file-upload'
-                    inputStyle={{color: '#6366F1'}}
+                    inputStyle={{ color: "#6366F1" }}
                   />
                 </div>
               </div>
@@ -190,13 +200,25 @@ export default function Bulk() {
           >
             Cancel
           </button>
-          <button
-            type='button'
-            onClick={handleSave}
-            className='rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-          >
-            Save
-          </button>
+          <div className='flex gap-4'>
+            <button
+              type='button'
+              onClick={handleSave}
+              className='rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+            >
+              Save
+            </button>
+
+            <div className='my-auto'>
+              {loadingStatus && (
+                <img
+                  className='h-8 w-auto'
+                  src={loadingIcon}
+                  alt='Your Company'
+                />
+              )}
+            </div>
+          </div>
         </div>
       </form>
     </div>
