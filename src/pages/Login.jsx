@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false); // State for loading
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
@@ -25,7 +25,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
     setIsLoading(true); // Set loading state to true
     try {
       const response = await fetch(`${baseURL}/api/auth/login`, {
@@ -38,28 +38,28 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data)
-        const verifiedDate = new Date(data.user.verified_date._seconds * 1000); 
+        setUser(data);
+        const verifiedDate = new Date(data.user.verified_date._seconds * 1000);
         const currentDate = new Date();
-        const diffTime = Math.abs(currentDate - verifiedDate); 
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffTime = Math.abs(currentDate - verifiedDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         const verified_date_valid = diffDays < 7;
 
         if (data.user.is_verified && verified_date_valid) {
           localStorage.setItem("token", data.token);
           localStorage.setItem("refreshToken", data.refreshToken);
           localStorage.setItem("user", JSON.stringify(data.user));
-          navigate("/"); 
+          navigate("/");
         } else {
-          setContact(data.user.email); 
-          setOpenx(true); 
+          setContact(data.user.email);
+          setOpenx(true);
         }
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Login failed"); 
+        setError(errorData.message || "Login failed");
       }
     } catch (error) {
-      setError("Something went wrong. Please try again later."); 
+      setError("Something went wrong. Please try again later.");
     } finally {
       setIsLoading(false); // Set loading state to false
     }
@@ -77,9 +77,9 @@ const Login = () => {
         },
         body: JSON.stringify({ contact: contactDetail }),
       });
-      setOpenx(false); 
-      setOpen(true); 
-      setOtpCountdown(60); 
+      setOpenx(false);
+      setOpen(true);
+      setOtpCountdown(60);
       setVerificationMethod(method);
     } catch (error) {
       console.error("Failed to send OTP", error);
@@ -93,7 +93,9 @@ const Login = () => {
         setOtpCountdown((prev) => prev - 1);
       }, 1000);
     } else if (otpCountdown === 0 && otpResendCount >= 3) {
-      setError("Maximum OTP resend attempts reached. Redirecting to login page.");
+      setError(
+        "Maximum OTP resend attempts reached. Redirecting to login page."
+      );
       setTimeout(() => {
         navigate("/login");
         window.location.reload();
@@ -132,7 +134,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("refreshToken", data.refreshToken);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate("/"); 
+        navigate("/");
       } else {
         setError("Invalid OTP. Please try again.");
       }
@@ -161,9 +163,15 @@ const Login = () => {
 
             <div className='mt-6'>
               <div>
-                <form className='space-y-6' onSubmit={handleLogin}>
+                <form
+                  className='space-y-6'
+                  onSubmit={handleLogin}
+                >
                   <div>
-                    <label htmlFor='emailOrPhone' className='block text-sm font-medium leading-6 text-gray-900'>
+                    <label
+                      htmlFor='emailOrPhone'
+                      className='block text-sm font-medium leading-6 text-gray-900'
+                    >
                       Email / phone number
                     </label>
                     <div className='mt-2'>
@@ -180,7 +188,10 @@ const Login = () => {
                   </div>
 
                   <div>
-                    <label htmlFor='password' className='block text-sm font-medium leading-6 text-gray-900'>
+                    <label
+                      htmlFor='password'
+                      className='block text-sm font-medium leading-6 text-gray-900'
+                    >
                       Password
                     </label>
                     <div className='mt-2 relative'>
@@ -236,6 +247,14 @@ const Login = () => {
                         )}
                       </button>
                     </div>
+                    <button
+                      onClick={() => {
+                        navigate("/reset");
+                      }}
+                      className='mt-2 text-sm font-semibold text-blue-600 hover:text-blue-500'
+                    >
+                      Forgot password?
+                    </button>
                   </div>
 
                   {error && error !== "Invalid OTP. Please try again." && (
@@ -246,9 +265,9 @@ const Login = () => {
                     <button
                       type='submit'
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                      disabled={isLoading} 
+                      disabled={isLoading}
                     >
-                      {isLoading ? 'Logging in...' : 'Log in'}
+                      {isLoading ? "Logging in..." : "Log in"}
                     </button>
                     <p className='mt-4 text-sm leading-6 text-gray-500'>
                       Don't have account?{" "}
@@ -269,8 +288,16 @@ const Login = () => {
         </div>
       </div>
 
-      <Transition.Root show={openx} as={Fragment}>
-        <Dialog as='div' className='relative z-10' initialFocus={cancelButtonRef} onClose={setOpenx}>
+      <Transition.Root
+        show={openx}
+        as={Fragment}
+      >
+        <Dialog
+          as='div'
+          className='relative z-10'
+          initialFocus={cancelButtonRef}
+          onClose={setOpenx}
+        >
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -302,7 +329,10 @@ const Login = () => {
                       onClick={() => setOpenx(false)}
                     >
                       <span className='sr-only'>Close</span>
-                      <XMarkIcon className='h-6 w-6' aria-hidden='true' />
+                      <XMarkIcon
+                        className='h-6 w-6'
+                        aria-hidden='true'
+                      />
                     </button>
                   </div>
 
@@ -349,8 +379,16 @@ const Login = () => {
         </Dialog>
       </Transition.Root>
 
-      <Transition.Root show={open} as={Fragment}>
-        <Dialog as='div' className='relative z-10' initialFocus={cancelButtonRef} onClose={setOpen}>
+      <Transition.Root
+        show={open}
+        as={Fragment}
+      >
+        <Dialog
+          as='div'
+          className='relative z-10'
+          initialFocus={cancelButtonRef}
+          onClose={setOpen}
+        >
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -382,7 +420,10 @@ const Login = () => {
                       onClick={() => setOpen(false)}
                     >
                       <span className='sr-only'>Close</span>
-                      <XMarkIcon className='h-6 w-6' aria-hidden='true' />
+                      <XMarkIcon
+                        className='h-6 w-6'
+                        aria-hidden='true'
+                      />
                     </button>
                   </div>
                   <div>
@@ -393,23 +434,34 @@ const Login = () => {
                       <div className='flex flex-row text-sm text-gray-400'>
                         <p>
                           We have sent a code to your{" "}
-                          {verificationMethod === "email" ? "email" : "phone"} {verificationMethod === "email" ? contact : user?.user?.phone}
+                          {verificationMethod === "email" ? "email" : "phone"}{" "}
+                          {verificationMethod === "email"
+                            ? contact
+                            : user?.user?.phone}
                         </p>
                       </div>
                     </div>
 
                     <div className='mt-8'>
-                      <form action='' method='post'>
+                      <form
+                        action=''
+                        method='post'
+                      >
                         <div className='flex flex-col space-y-8'>
                           <div className='flex gap-2 sm:gap-4 flex-row items-center justify-between mx-auto w-full max-w-md'>
                             {otp.map((value, index) => (
-                              <div className='w-16 sm:h-16' key={index}>
+                              <div
+                                className='w-16 sm:h-16'
+                                key={index}
+                              >
                                 <input
                                   id={`otp-${index}`}
                                   className='[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full sm:h-full flex flex-col items-center justify-center text-center outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700'
                                   type='number'
                                   value={value}
-                                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                                  onChange={(e) =>
+                                    handleOtpChange(index, e.target.value)
+                                  }
                                   maxLength={1}
                                 />
                               </div>

@@ -9,6 +9,7 @@ import Bulk from '../pages/Bulk';
 import Manage from '../pages/Manage';
 import Edit from '../pages/Edit';
 import Users from '../pages/Users';
+import Reset from '../pages/Reset';
 import ProtectedRoute from '../middlewares/ProtectedRoute';
 import PublicRoute from '../middlewares/PublicRoute';
 
@@ -27,6 +28,12 @@ const router = createBrowserRouter([
     path: '/register',
     element: (
         <PublicRoute element={<Register />} />
+    ),
+  },
+  {
+    path: '/reset',
+    element: (
+        <PublicRoute element={<Reset />} />
     ),
   },
   {
