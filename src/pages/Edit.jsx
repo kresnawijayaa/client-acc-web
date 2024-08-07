@@ -1,6 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '400px',
+};
+
+const center = {
+  lat: -5.395489,
+  lng: 105.2282571,
+};
 
 export default function Edit() {
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -24,6 +35,12 @@ export default function Edit() {
     tanggalValid: "",
   });
 
+  const [mapCenter, setMapCenter] = useState(center);
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAP_API,
+  });
+
   useEffect(() => {
     const fetchCustomer = async () => {
       const token = localStorage.getItem("token");
@@ -33,6 +50,7 @@ export default function Edit() {
         },
       });
       setCustomer(response.data);
+      setMapCenter({ lat: response.data.lat, lng: response.data.lng });
     };
 
     fetchCustomer();
@@ -41,6 +59,29 @@ export default function Edit() {
   const handleChange = (e) => {
     setCustomer({ ...customer, [e.target.name]: e.target.value });
   };
+
+  const handleMapClick = useCallback((event) => {
+    console.log(event.latLng.lat(), event.latLng.lng(), " <<< cek lat lng")
+    setCustomer({
+      ...customer,
+      lat: event.latLng.lat(),
+      lng: event.latLng.lng(),
+    });
+  }, [customer]);
+
+  const handleSavePinLocation = () => {
+    console.log(customer, "<<< ini cust lama")
+    console.log(mapCenter.lat, mapCenter.lng, "<<< ini yg di save")
+    setCustomer(prevCustomer => ({
+      ...prevCustomer,
+      lat: mapCenter.lat,
+      lng: mapCenter.lng,
+    }));
+  };
+
+  useEffect(() => {
+    console.log(customer, "<<< ini hasil customer baru");
+  }, [customer]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +93,8 @@ export default function Edit() {
     });
     navigate('/manageCustomer');
   };
+
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div className='my-4 sm:my-8 mx-auto px-4'>
@@ -347,6 +390,42 @@ export default function Edit() {
                   />
                 </div>
               </div>
+
+              <div className='col-span-full'>
+                <label
+                  htmlFor='googleMap'
+                  className='block text-sm font-medium leading-6 text-gray-900'
+                >
+                  Google Map
+                </label>
+                <div className='mt-2'>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={mapCenter}
+                    zoom={14}
+                    onClick={handleMapClick}
+                  >
+                    <Marker position={{ lat: customer.lat, lng: customer.lng }} />
+                  </GoogleMap>
+                </div>
+                <div className='mt-2'>
+                  <button
+                    type='button'
+                    className='border rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                    onClick={() => setMapCenter({ lat: customer.lat, lng: customer.lng })}
+                  >
+                    Change Pin Location
+                  </button>
+                  <button
+                    type='button'
+                    className='ml-4 rounded-md bg-indigo-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                    onClick={handleSavePinLocation}
+                  >
+                    Save Pin Location
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
