@@ -66,12 +66,12 @@ const PasswordResetPage = () => {
                       htmlFor='emailOrPhone'
                       className='block text-sm font-medium leading-6 text-gray-900'
                     >
-                      Enter your email or phone number
+                      Email or phone number
                     </label>
                     <div className='mt-2'>
                       <input
                         type='text'
-                        placeholder='Enter your email or phone number'
+                        placeholder='Enter email or phone number'
                         value={contact}
                         onChange={(e) => setContact(e.target.value)}
                         className='block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
@@ -149,7 +149,7 @@ const PasswordResetPage = () => {
                     </button>
                   </div> */}
 
-                  <div>
+                  <div className="mt-8">
                     <button
                       onClick={handleSendOTP}
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
@@ -173,13 +173,12 @@ const PasswordResetPage = () => {
               </div>
 
               <div className='mt-6'>
-                <div>
                   <div>
                     <label
                       htmlFor='emailOrPhone'
                       className='block text-sm font-medium leading-6 text-gray-900'
                     >
-                      Enter OTP
+                      OTP
                     </label>
                     <div className='mt-2'>
                       <input
@@ -192,12 +191,12 @@ const PasswordResetPage = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="mt-4">
                     <label
                       htmlFor='password'
                       className='block text-sm font-medium leading-6 text-gray-900'
                     >
-                      Enter New Password
+                      New Password
                     </label>
                     <div className='mt-2 relative'>
                       <input
@@ -255,7 +254,7 @@ const PasswordResetPage = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="mt-8">
                     <button
                       onClick={handleResetPassword}
                       className='flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
@@ -263,7 +262,6 @@ const PasswordResetPage = () => {
                       Reset Password
                     </button>
                   </div>
-                </div>
               </div>
             </div>
           </div>
