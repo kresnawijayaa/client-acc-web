@@ -1,5 +1,10 @@
 import React, { Fragment, useState, useEffect, useCallback } from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
 import { Listbox, Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
@@ -10,6 +15,7 @@ function classNames(...classes) {
 }
 
 export default function Home() {
+  const [mapselectedCustomer, setMapselectedCustomer] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [selectedCity, setSelectedCity] = useState({ id: -1, name: "All" });
   const [selectedDistrict, setSelectedDistrict] = useState({
@@ -23,7 +29,7 @@ export default function Home() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [loading, setLoading] = useState(true); // State loading
   // const googleMapsApiKey = "AIzaSyAsvgcF3U2fa5KsPQxpVtzHhmoQUF7HMhI"; // Replace with your API Key
-  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAP_API
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAP_API;
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   const defaultCenter = {
@@ -52,12 +58,9 @@ export default function Home() {
       const token = localStorage.getItem("token");
 
       try {
-        const response = await axios.get(
-          `${baseURL}/api/customers`,
-          {
-            headers: { authorization: `${token}` },
-          }
-        );
+        const response = await axios.get(`${baseURL}/api/customers`, {
+          headers: { authorization: `${token}` },
+        });
 
         const uniqueCities = [
           ...new Set(response.data.map((item) => item.kota)),
@@ -486,8 +489,39 @@ export default function Home() {
                         anchor: new window.google.maps.Point(16, 32),
                       }
                     }
+                    onClick={() => {
+                      setMapselectedCustomer(customer);
+                    }}
                   />
                 ))}
+
+                {mapselectedCustomer && (
+                  <InfoWindow
+                    position={{
+                      lat: mapselectedCustomer.lat,
+                      lng: mapselectedCustomer.lng,
+                    }}
+                    onCloseClick={() => {
+                      setMapselectedCustomer(null);
+                    }}
+                  >
+                    <div>
+                      <h3 className='text-sm font-semibold'>
+                        {mapselectedCustomer.namaCustomer}
+                      </h3>
+                      <button
+                        onClick={() => {
+                          setOpen(true);
+                          fetchCustomerDetails(mapselectedCustomer.id);
+                          setMapselectedCustomer(null); // Close InfoWindow after click
+                        }}
+                        className='mt-2 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-600'
+                      >
+                        View details
+                      </button>
+                    </div>
+                  </InfoWindow>
+                )}
               </GoogleMap>
             </LoadScript>
           </div>
@@ -510,14 +544,14 @@ export default function Home() {
                       <p className='truncate text-sm font-semibold leading-6 text-gray-900'>
                         {customer.namaCustomer}
                       </p>
-                      <p
+                      {/* <p
                         className={classNames(
                           "text-gray-600 bg-gray-50 ring-gray-500/10",
                           "rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset"
                         )}
                       >
                         {customer.distance} KM
-                      </p>
+                      </p> */}
                     </div>
                     <div className='mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500'>
                       <p className='whitespace-nowrap truncate'>
