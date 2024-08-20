@@ -40,31 +40,37 @@ export default function Home() {
 
   const handleLoadMap = useCallback(() => {
     if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          setMapCenter({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          fetchAddress(position.coords.latitude, position.coords.longitude);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setMapCenter(defaultCenter);
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-
-      return () => navigator.geolocation.clearWatch(watchId); // Cleanup on component unmount
+      navigator.geolocation.getCurrentPosition((position) => {
+        setCurrentLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        setMapCenter({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        fetchAddress(position.coords.latitude, position.coords.longitude);
+        console.log(">>> current location : " + currentLocation + mapCenter);
+      });
     } else {
-      console.log("Geolocation not supported by this browser.");
+      console.log(">>> gak masuk nav geo: " + currentLocation + mapCenter);
       setMapCenter(defaultCenter);
     }
   }, []);
+
+  // const handleLoadMap = useCallback(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition((position) => {
+  //       const { latitude, longitude } = position.coords;
+  //       setCurrentLocation({ lat: latitude, lng: longitude });
+  //       setMapCenter({ lat: latitude, lng: longitude });
+  //       fetchAddress(latitude, longitude);
+  //       console.log(">>> current location : " + currentLocation + mapCenter);
+  //     });
+  //   } else {
+  //     setMapCenter(defaultCenter);
+  //   }
+  // }, []);
 
   const fetchAddress = async (lat, lng) => {
     try {
@@ -82,6 +88,10 @@ export default function Home() {
       setCurrentAddress("Error fetching address");
     }
   };
+
+  useEffect(() => {
+    console.log(mapCenter, currentLocation, " << cek cur loccc")
+  }, [currentLocation])
 
   useEffect(() => {
     const fetchCitiesAndDistricts = async () => {
@@ -267,6 +277,7 @@ export default function Home() {
     <>
       <div className='sm:flex'>
         <div className='sm:w-2/3 flex flex-col-reverse sm:flex-col'>
+          
           <div className='p-4 w-full gap-x-8 sm:flex'>
             <div className='w-full'>
               <Listbox
@@ -503,7 +514,7 @@ export default function Home() {
               >
                 {currentLocation && (
                   <Marker
-                    position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+                  position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
                     label={{
                       text: "You are here",
                       fontSize: "12px",
@@ -512,7 +523,7 @@ export default function Home() {
                     }}
                     icon={
                       window.google && {
-                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png", // Use a blue-dot icon for live location
+                        url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
                         labelOrigin: new window.google.maps.Point(70, 20),
                         size: new window.google.maps.Size(32, 32),
                         anchor: new window.google.maps.Point(16, 32),
@@ -549,24 +560,36 @@ export default function Home() {
               </GoogleMap>
             </LoadScript>
             {currentLocation && (
-              <div className='px-4 pt-4'>
-                <h2 className='text-lg font-bold text-gray-900'>
-                  Your Current Location
-                </h2>
-                <div className='flex gap-4'>
-                  <div className='w-full'>
-                    <p className='text-sm text-gray-600 truncate'>
-                      {currentAddress}
-                    </p>
-                    <p className='text-sm text-gray-600'>
-                      Coordinates: {currentLocation.lat}, {currentLocation.lng}
-                    </p>
-                  </div>
+            <div className='px-4 pt-4'>
+              <h2 className='text-lg font-bold text-gray-900'>
+                Your Current Location
+              </h2>
+              <div className='flex gap-4'>
+                <div className='w-full'>
+                  <p className='text-sm text-gray-600 truncate'>
+                    {currentAddress}
+                  </p>
+                  <p className='text-sm text-gray-600'>
+                    Coordinates: {currentLocation.lat}, {currentLocation.lng}
+                  </p>
                 </div>
+                {/* <div className='w-1/3'>
+                  <button
+                    onClick={() => {
+                      setMapCenter(currentLocation);
+                      setCurrentLocation(currentLocation);
+                    }}
+                    className='mt-2 inline-block bg-blue-500 text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-blue-600'
+                  >
+                    Center on Current Location
+                  </button>
+                </div> */}
               </div>
-            )}
+            </div>
+          )}
           </div>
         </div>
+        {/* <div className='sm:w-2/5 p-4 max-h-screen overflow-auto'> */}
         <div className='sm:w-2/5 p-4 max-h-screen'>
           {loading ? (
             <Loading />
