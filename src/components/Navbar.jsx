@@ -254,7 +254,7 @@ export default function Navbar() {
           </Dialog.Panel>
         </Dialog>
       </header>
-      <div className='flex items-center gap-x-6 bg-gray-900 px-6 py-2.5 sm:px-3.5 sm:before:flex-1'>
+      {/* <div className='flex items-center gap-x-6 bg-gray-900 px-6 py-2.5 sm:px-3.5 sm:before:flex-1'>
         <p className='text-sm leading-6 text-white'>
           <a href='#'>
             <strong className='font-semibold'>This website is under maintenance</strong>
@@ -270,7 +270,7 @@ export default function Navbar() {
               />
             </svg>
             Some functions may not be available&nbsp;
-            {/* <span aria-hidden='true'>&rarr;</span> */}
+            <span aria-hidden='true'>&rarr;</span>
           </a>
         </p>
         <div className='flex flex-1 justify-end'>
@@ -285,7 +285,7 @@ export default function Navbar() {
             />
           </button>
         </div>
-      </div>
+      </div> */}
       <Transition.Root
         show={openx}
         as={Fragment}

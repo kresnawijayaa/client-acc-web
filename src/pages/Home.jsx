@@ -1,14 +1,9 @@
 import React, { Fragment, useState, useEffect, useCallback } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  InfoWindow,
-} from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Listbox, Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
-import Loading from "../components/Loading"; // Impor komponen Loading
+import Loading from "../components/Loading";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -17,6 +12,8 @@ function classNames(...classes) {
 export default function Home() {
   const [mapselectedCustomer, setMapselectedCustomer] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [mapCenter, setMapCenter] = useState(null);
   const [selectedCity, setSelectedCity] = useState({ id: -1, name: "All" });
   const [selectedDistrict, setSelectedDistrict] = useState({
     id: -1,
@@ -27,8 +24,7 @@ export default function Home() {
   const [districts, setDistricts] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [loading, setLoading] = useState(true); // State loading
-  // const googleMapsApiKey = "AIzaSyAsvgcF3U2fa5KsPQxpVtzHhmoQUF7HMhI"; // Replace with your API Key
+  const [loading, setLoading] = useState(true);
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAP_API;
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -44,14 +40,48 @@ export default function Home() {
 
   const handleLoadMap = useCallback(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCurrentLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      });
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setMapCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          fetchAddress(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setMapCenter(defaultCenter);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+
+      return () => navigator.geolocation.clearWatch(watchId); // Cleanup on component unmount
+    } else {
+      console.log("Geolocation not supported by this browser.");
+      setMapCenter(defaultCenter);
     }
   }, []);
+
+  const fetchAddress = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleMapsApiKey}`
+      );
+
+      if (response.data.status === "OK") {
+        setCurrentAddress(response.data.results[0].formatted_address);
+      } else {
+        setCurrentAddress("Address not found");
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setCurrentAddress("Error fetching address");
+    }
+  };
 
   useEffect(() => {
     const fetchCitiesAndDistricts = async () => {
@@ -172,7 +202,7 @@ export default function Home() {
   }, []);
 
   const fetchCustomers = async (lat, lng, city, district) => {
-    setLoading(true); // Set loading true
+    setLoading(true);
     const token = localStorage.getItem("token");
 
     try {
@@ -196,7 +226,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error fetching customers:", error);
     } finally {
-      setLoading(false); // Set loading false
+      setLoading(false);
     }
   };
 
@@ -463,14 +493,34 @@ export default function Home() {
             >
               <GoogleMap
                 key={
-                  currentLocation
-                    ? `${currentLocation.lat}-${currentLocation.lng}`
+                  mapCenter
+                    ? `${mapCenter.lat}-${mapCenter.lng}`
                     : `${defaultCenter.lat}-${defaultCenter.lng}`
-                } // Add key to force re-render
+                }
                 mapContainerStyle={mapStyles}
                 zoom={12}
-                center={currentLocation || defaultCenter}
+                center={mapCenter || defaultCenter}
               >
+                {currentLocation && (
+                  <Marker
+                    position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+                    label={{
+                      text: "You are here",
+                      fontSize: "12px",
+                      color: "#C70E20",
+                      fontWeight: "bold",
+                    }}
+                    icon={
+                      window.google && {
+                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png", // Use a blue-dot icon for live location
+                        labelOrigin: new window.google.maps.Point(70, 20),
+                        size: new window.google.maps.Size(32, 32),
+                        anchor: new window.google.maps.Point(16, 32),
+                      }
+                    }
+                  />
+                )}
+
                 {customers.map((customer) => (
                   <Marker
                     key={customer.id}
@@ -490,44 +540,35 @@ export default function Home() {
                       }
                     }
                     onClick={() => {
-                      setMapselectedCustomer(customer);
+                      setOpen(true); // Open customer details dialog
+                      fetchCustomerDetails(customer.id); // Fetch customer details
+                      setMapselectedCustomer(customer); // Set clicked customer
                     }}
                   />
                 ))}
-
-                {mapselectedCustomer && (
-                  <InfoWindow
-                    position={{
-                      lat: mapselectedCustomer.lat,
-                      lng: mapselectedCustomer.lng,
-                    }}
-                    onCloseClick={() => {
-                      setMapselectedCustomer(null);
-                    }}
-                  >
-                    <div>
-                      <h3 className='text-sm font-semibold'>
-                        {mapselectedCustomer.namaCustomer}
-                      </h3>
-                      <button
-                        onClick={() => {
-                          setOpen(true);
-                          fetchCustomerDetails(mapselectedCustomer.id);
-                          setMapselectedCustomer(null); // Close InfoWindow after click
-                        }}
-                        className='mt-2 rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-600'
-                      >
-                        View details
-                      </button>
-                    </div>
-                  </InfoWindow>
-                )}
               </GoogleMap>
             </LoadScript>
+            {currentLocation && (
+              <div className='px-4 pt-4'>
+                <h2 className='text-lg font-bold text-gray-900'>
+                  Your Current Location
+                </h2>
+                <div className='flex gap-4'>
+                  <div className='w-full'>
+                    <p className='text-sm text-gray-600 truncate'>
+                      {currentAddress}
+                    </p>
+                    <p className='text-sm text-gray-600'>
+                      Coordinates: {currentLocation.lat}, {currentLocation.lng}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        <div className='sm:w-2/5 p-4 overflow-hidden'>
-          {loading ? ( // Tampilkan komponen Loading jika data belum siap
+        <div className='sm:w-2/5 p-4 max-h-screen'>
+          {loading ? (
             <Loading />
           ) : (
             <ul
@@ -544,14 +585,6 @@ export default function Home() {
                       <p className='truncate text-sm font-semibold leading-6 text-gray-900'>
                         {customer.namaCustomer}
                       </p>
-                      {/* <p
-                        className={classNames(
-                          "text-gray-600 bg-gray-50 ring-gray-500/10",
-                          "rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset"
-                        )}
-                      >
-                        {customer.distance} KM
-                      </p> */}
                     </div>
                     <div className='mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500'>
                       <p className='whitespace-nowrap truncate'>
@@ -563,7 +596,7 @@ export default function Home() {
                     <button
                       onClick={() => {
                         setOpen(true);
-                        fetchCustomerDetails(customer.id); // Fetch customer details on button click
+                        fetchCustomerDetails(customer.id);
                       }}
                       className='rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50'
                     >
@@ -577,6 +610,7 @@ export default function Home() {
           )}
         </div>
       </div>
+
       <Transition.Root
         show={open}
         as={Fragment}
@@ -611,7 +645,7 @@ export default function Home() {
               >
                 <Dialog.Panel className='relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6'>
                   <div className='overflow-hidden bg-white shadow sm:rounded-lg'>
-                    {selectedCustomer && ( // Check if selectedCustomer is not null before rendering
+                    {selectedCustomer && (
                       <>
                         <div className='flex px-4 py-4 sm:px-6'>
                           <div className='w-full'>
