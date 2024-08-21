@@ -522,12 +522,12 @@ export default function Home() {
                     label={{
                       text: "You are here",
                       fontSize: "12px",
-                      color: "#4891E0",
+                      color: "#248C42",
                       fontWeight: "bold",
                     }}
                     icon={
                       window.google && {
-                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                        url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
                         labelOrigin: new window.google.maps.Point(70, 20),
                         size: new window.google.maps.Size(32, 32),
                         anchor: new window.google.maps.Point(16, 32),
