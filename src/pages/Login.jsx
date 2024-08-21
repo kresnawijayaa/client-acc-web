@@ -247,14 +247,14 @@ const Login = () => {
                         )}
                       </button>
                     </div>
-                    <button
+                    <a
                       onClick={() => {
                         navigate("/reset");
                       }}
-                      className='mt-2 text-sm font-semibold text-blue-600 hover:text-blue-500'
+                      className='cursor-pointer mt-4 text-sm font-semibold text-blue-600 hover:text-blue-500'
                     >
                       Forgot password?
-                    </button>
+                    </a>
                   </div>
 
                   {error && error !== "Invalid OTP. Please try again." && (

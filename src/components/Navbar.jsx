@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect, useRef } from "react";
 import { Disclosure, Menu, Transition, Dialog } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 // import { XMarkIcon } from '@heroicons/react/20/solid'
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import logo from "../assets/CekSekitarMu.png";
 
 const userNavigation = [
@@ -11,7 +11,7 @@ const userNavigation = [
 ];
 
 const adminNavigation = [
-  { name: "Dashboard", href: "/" },
+  // { name: "Dashboard", href: "/" },
   { name: "Manage User", href: "/users" },
   { name: "Manage Customer", href: "/manageCustomer" },
   // { name: "Add Customer", href: "/addCustomer" },
@@ -24,6 +24,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const navigate = useNavigate();
+  // const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navigation, setNavigation] = useState(userNavigation);
 
@@ -56,10 +57,21 @@ export default function Navbar() {
     return () => clearInterval(intervalId);
   }, [session]);
 
+  // useEffect(() => {
+  //   if (location.pathname === "/") {
+  //     window.location.reload();
+  //   }
+  // }, [location.pathname]);
+
   const handleSignOut = () => {
     localStorage.clear(); // Clear all local storage
     window.location.reload();
     // navigate("/login"); // Navigate to login page
+  };
+
+  const handleHome = () => {
+    navigate("/");
+    window.location.reload();
   };
 
   return (
@@ -78,7 +90,10 @@ export default function Navbar() {
                 aria-hidden='true'
               />
             </button>
-            <NavLink to='/'>
+            <button
+              type='button'
+              onClick={handleHome}
+            >
               {/* <img
                 className='h-8 w-auto'
                 src={logo}
@@ -89,7 +104,7 @@ export default function Navbar() {
                   Cek<span className='font-bold'>SekitarMu</span>
                 </h1>
               </div>
-            </NavLink>
+            </button>
           </div>
           {/* <nav className='hidden md:flex md:gap-x-11 md:text-sm md:font-semibold md:leading-6 md:text-gray-700'>
             {navigation.map((item, itemIdx) => (
@@ -161,6 +176,19 @@ export default function Navbar() {
                       </a>
                     )}
                   </Menu.Item> */}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={handleHome}
+                        className={classNames(
+                          active ? "bg-gray-100" : "",
+                          "block w-full text-left px-4 py-2 text-sm text-gray-700"
+                        )}
+                      >
+                        Dashboard
+                      </button>
+                    )}
+                  </Menu.Item>
                   {navigation.map((item, itemIdx) => (
                     <Menu.Item className='hidden sm:block'>
                       {({ active }) => (
