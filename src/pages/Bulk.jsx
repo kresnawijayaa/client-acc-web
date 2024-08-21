@@ -74,7 +74,7 @@ export default function Bulk() {
                 Menambah satu data customer
               </p>
               <button className='mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50'>
-                <NavLink to='/addCustomer'>Add Customer</NavLink>
+                <NavLink to='/addCustomer'>Add Customer →</NavLink>
               </button>
             </div>
             <div className='gap-x-6 gap-y-8 col-span-2'>
