@@ -53,7 +53,9 @@ export default function Home() {
         console.log(">>> current location : " + currentLocation + mapCenter);
       });
     } else {
-      console.log(">>> gak masuk nav geo: " + currentLocation + mapCenter);
+      console.log(
+        ">>> gak masuk nav geocurrent location : " + currentLocation + mapCenter
+      );
       setMapCenter(defaultCenter);
     }
   }, []);
@@ -90,8 +92,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.log(mapCenter, currentLocation, " << cek cur loccc")
-  }, [currentLocation])
+    console.log(mapCenter, currentLocation, " << cek cur loccc");
+  }, [currentLocation]);
 
   useEffect(() => {
     const fetchCitiesAndDistricts = async () => {
@@ -275,9 +277,8 @@ export default function Home() {
 
   return (
     <>
-      <div className='sm:flex'>
+      <div className='sm:flex max-h-screen'>
         <div className='sm:w-2/3 flex flex-col-reverse sm:flex-col'>
-          
           <div className='p-4 w-full gap-x-8 sm:flex'>
             <div className='w-full'>
               <Listbox
@@ -514,7 +515,10 @@ export default function Home() {
               >
                 {currentLocation && (
                   <Marker
-                  position={{ lat: currentLocation.lat, lng: currentLocation.lng }}
+                    position={{
+                      lat: currentLocation.lat,
+                      lng: currentLocation.lng,
+                    }}
                     label={{
                       text: "You are here",
                       fontSize: "12px",
@@ -559,38 +563,10 @@ export default function Home() {
                 ))}
               </GoogleMap>
             </LoadScript>
-            {currentLocation && (
-            <div className='px-4 pt-4'>
-              <h2 className='text-lg font-bold text-gray-900'>
-                Your Current Location
-              </h2>
-              <div className='flex gap-4'>
-                <div className='w-full'>
-                  <p className='text-sm text-gray-600 truncate'>
-                    {currentAddress}
-                  </p>
-                  <p className='text-sm text-gray-600'>
-                    Coordinates: {currentLocation.lat}, {currentLocation.lng}
-                  </p>
-                </div>
-                {/* <div className='w-1/3'>
-                  <button
-                    onClick={() => {
-                      setMapCenter(currentLocation);
-                      setCurrentLocation(currentLocation);
-                    }}
-                    className='mt-2 inline-block bg-blue-500 text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-blue-600'
-                  >
-                    Center on Current Location
-                  </button>
-                </div> */}
-              </div>
-            </div>
-          )}
           </div>
         </div>
         {/* <div className='sm:w-2/5 p-4 max-h-screen overflow-auto'> */}
-        <div className='sm:w-2/5 p-4 max-h-screen'>
+        <div className='sm:w-1/3 p-4 max-h-screen'>
           {loading ? (
             <Loading />
           ) : (
@@ -598,6 +574,45 @@ export default function Home() {
               role='list'
               className='divide-y divide-gray-100'
             >
+              {currentLocation && (
+                <li>
+                  <div className='pb-4'>
+                      <h4 className='text-md font-bold text-gray-900'>
+                        Your Current Location
+                      </h4>
+                      <div className='flex gap-4'>
+                        <div className='w-full'>
+                          <div className="h-10 overflow-hidden">
+                            <p className='text-sm text-gray-600'>
+                              {currentAddress}
+                            </p>
+                          </div>
+                          <p className='text-sm text-gray-600'>
+                            Coordinates: {currentLocation.lat},{" "}
+                            {currentLocation.lng}
+                          </p>
+                        </div>
+                      </div>
+                    
+                  </div>
+                </li>
+              )}
+              <li>
+                <div className='flex items-start gap-x-3 py-4'>
+                  <p
+                    className={classNames(
+                      "text-gray-600 bg-gray-50 ring-gray-500/10",
+                      "rounded-md whitespace-nowrap mt-0.5 px-4 py-2 text-sm font-medium ring-1 ring-inset"
+                    )}
+                  >
+                    Showing{" "}
+                    <span className='font-bold text-md'>
+                      {customers.length}
+                    </span>{" "}
+                    data
+                  </p>
+                </div>
+              </li>
               {customers.map((customer) => (
                 <li
                   key={customer.id}

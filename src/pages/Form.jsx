@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Add() {
   const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -37,7 +37,7 @@ export default function Add() {
           authorization: `${token}`,
         },
       });
-      navigate('/manageCustomer');
+      navigate("/manageCustomer");
     } catch (error) {
       console.error("There was an error adding the customer!", error);
     }
@@ -49,15 +49,34 @@ export default function Add() {
         <div className='space-y-12'>
           <div className='grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3'>
             <div>
-              <h1 className='text-base font-semibold leading-7 text-gray-900'>
+              {/* <h1 className='text-base font-semibold leading-7 text-gray-900'>
                 Add Customer
               </h1>
-              <p className='mt-1 text-sm leading-6 text-gray-600'>
-                Tambah data customer.
+              <p className='mt-1 mb-6 text-sm leading-6 text-gray-600'>
+                Isi form untuk menambah satu data customer
               </p>
+              <hr /> */}
+              <h1 className='text-base font-semibold leading-7 text-gray-900'>
+                Bulk Add Customer
+              </h1>
+              <p className='mt-1 text-sm leading-6 text-gray-600'>
+                Menambah banyak data customer (.csv/.xlsx)
+              </p>
+              <button className='mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50'>
+                <NavLink to='/bulkAddCustomer'>Bulk Add Customer</NavLink>
+              </button>
             </div>
 
             <div className='grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-2'>
+              <div className='sm:col-span-3 sm:col-start-1'>
+                <h1 className='text-base font-semibold leading-7 text-gray-900'>
+                  Add Customer
+                </h1>
+                <p className='mt-1 text-sm leading-6 text-gray-600'>
+                  Menambah satu data customer
+                </p>
+              </div>
+
               <div className='sm:col-span-3 sm:col-start-1'>
                 <label
                   htmlFor='kota'
@@ -345,7 +364,7 @@ export default function Add() {
           <button
             type='button'
             className='border rounded-md bg-white px-6 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-            onClick={() => navigate('/manageCustomer')}
+            onClick={() => navigate("/manageCustomer")}
           >
             Cancel
           </button>

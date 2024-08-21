@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CSVReader from "react-csv-reader";
 import axios from "axios";
 import loadingIcon from "../assets/loading-icon.svg";
+import { NavLink } from "react-router-dom";
 
 export default function Bulk() {
   const [data, setData] = useState([]);
@@ -42,7 +43,7 @@ export default function Bulk() {
 
     console.log(data, "<<<>>>");
     try {
-      setLoadingStatus(true)
+      setLoadingStatus(true);
       await axios.post(
         `${baseURL}/api/customers/bulk`,
         { customers: data }, // Mengirim array data customer dalam body request
@@ -53,7 +54,7 @@ export default function Bulk() {
         }
       );
       alert("Data berhasil disimpan!");
-      setLoadingStatus(false)
+      setLoadingStatus(false);
     } catch (error) {
       console.error("Error saving data:", error);
       alert("Terjadi kesalahan saat menyimpan data.");
@@ -66,14 +67,25 @@ export default function Bulk() {
         <div className='space-y-12'>
           <div className='grid grid-cols-1 gap-x-8 gap-y-10 border-b border-gray-900/10 pb-12 md:grid-cols-3'>
             <div className='col-span-1'>
-              <h2 className='text-base font-semibold leading-7 text-gray-900'>
-                Bulk Create Customers
-              </h2>
+              <h1 className='text-base font-semibold leading-7 text-gray-900'>
+                Add Customer
+              </h1>
               <p className='mt-1 text-sm leading-6 text-gray-600'>
-                Upload langsung banyak data.
+                Menambah satu data customer
               </p>
+              <button className='mt-4 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50'>
+                <NavLink to='/addCustomer'>Add Customer</NavLink>
+              </button>
             </div>
             <div className='gap-x-6 gap-y-8 col-span-2'>
+              <div className='col-span-1'>
+                <h2 className='text-base font-semibold leading-7 text-gray-900'>
+                  Bulk Add Customers
+                </h2>
+                <p className='mt-1 mb-4 text-sm leading-6 text-gray-600'>
+                  Menambah banyak data customer (.csv/.xlsx)
+                </p>
+              </div>
               <div className='flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10'>
                 <div className='text-center'>
                   <CSVReader

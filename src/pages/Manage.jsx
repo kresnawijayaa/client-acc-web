@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect, useCallback } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import loadingIcon from "../assets/loading-icon.svg";
 
@@ -109,7 +109,11 @@ export default function Manage() {
 
   const handleDeleteAllConfirmation = () => {
     // Display confirmation dialog (not shown here)
-    if (window.confirm("Are you sure you want to delete all customers? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete all customers? This action cannot be undone."
+      )
+    ) {
       handleDeleteAll();
     }
   };
@@ -118,7 +122,7 @@ export default function Manage() {
     const token = localStorage.getItem("token");
 
     try {
-      setLoadingStatus(true)
+      setLoadingStatus(true);
       await axios.delete(`${baseURL}/api/customers`, {
         headers: {
           authorization: `${token}`,
@@ -126,11 +130,11 @@ export default function Manage() {
       });
       setData(data.filter((item) => item.id !== id));
       setFilteredData(filteredData.filter((item) => item.id !== id));
-      alert("All customers deleted successfully")
-      setLoadingStatus(false)
+      alert("All customers deleted successfully");
+      setLoadingStatus(false);
       fetchData();
     } catch (error) {
-      alert("Error deleting all customers:", error)
+      alert("Error deleting all customers:", error);
     }
   };
 
@@ -361,7 +365,16 @@ export default function Manage() {
               )}
             </Listbox>
           </div>
-          <div className='w-full mt-auto'>
+          <div className='w-full mt-auto flex gap-2'>
+            <div className='relative flex gap-2'>
+              <button
+                className='px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50'
+              >
+                <NavLink to='/addCustomer'>
+                Add Customer
+                </NavLink>
+              </button>
+            </div>
             <div className='relative flex gap-2'>
               <button
                 onClick={() => handleDeleteAllConfirmation()}
@@ -370,14 +383,14 @@ export default function Manage() {
                 Delete All
               </button>
               <div className='my-auto'>
-              {loadingStatus && (
-                <img
-                  className='h-8 w-auto'
-                  src={loadingIcon}
-                  alt='Your Company'
-                />
-              )}
-            </div>
+                {loadingStatus && (
+                  <img
+                    className='h-8 w-auto'
+                    src={loadingIcon}
+                    alt='Your Company'
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
